@@ -1,5 +1,6 @@
 import random
 import time
+from idlelib.configdialog import changes
 
 
 class Enemy:
@@ -7,17 +8,42 @@ class Enemy:
         self.name = name
         self.hp = hp
         self.damage = damage
-
     def attack(self, target):
         print(f"{self.name} атакував {target.name}...")
         target.taken_damage(self.damage)
-
     def taken_damage(self, taken_damage):
         self.hp -= taken_damage
         if self.hp < 0:
             self.hp = 0
         print(f"{self.name} отримав {taken_damage} шкоди. Залишилося {self.hp} життя!")
+    def drop_Item(self):
+        chance = random.randint(1, 100)
+        item_counter = 0
+        if chance < 5:
+            item_counter = 3
+        elif chance < 25:
+            item_counter = 2
+        elif chance < 50:
+            item_counter = 1
+        if item_counter > 0:
 
+            print(f" оГо ВаМ ВиПаЛо {item_counter} ШТуК!")
+            for i in range (item_counter):
+                class_Item = random.randint(0, 1)
+                if class_Item == 0:
+                    dropped_Item = random.choice(list_of_weapon)
+                else:
+                    dropped_Item = random.choice(list_of_armor)
+                print(f"ВаШа ШТуКеНЦія: {dropped_Item.name}!\n"
+                      f"\tБонусна шкода: {dropped_Item.bonus_damage}\n"
+                      f"\tБонусна броня: {dropped_Item.bonus_armor}\n"
+                      f"\tБонусе хп: {dropped_Item.bonus_hp}\n"
+                      f"ВЗяТи(1) чи ПЛюНУТи (КЛаЦай Шо ХоЧеШ)? ")
+                user_answer = input("ВиБиРай( 1 чи 2):")
+                if user_answer == 1:
+                    my_hero.equip_weapon(dropped_Item) if class_Item == 0 else my_hero.equip_armor(dropped_Item)
+                else:
+                    print("у ВаС ДіРяВі РуКи {dropped_Item.name}")
 
 class Item:
     def __init__(self, name, item_class, bonus_damage, bonus_hp, bonus_armor):
@@ -29,10 +55,11 @@ class Item:
 
 
 class Player:
-    def __init__(self, name, Player_class, hp, damage):
+    def __init__(self, name, Player_class, maxhp, damage):
         self.name = name
         self.Player_class = Player_class
-        self.hp = hp
+        self.hp = maxhp
+        self.max_hp = maxhp
         self.weapon = None
         self.armor = None
         self.damage = damage
@@ -67,9 +94,18 @@ class Player:
             print(f"Ти Що ЗаБуВ ХТо Ти, Це Не ТоБі {Item.name}")
             return
         self.armor = Item
+        self.max_hp += Item.bonus_hp
         self.armor += Item.bonus_armor
-        print(f"у ТеБе ТеПеР є Ця ШТуКеНЦія - {Item.
-              name}")
+        print(f"у ТеБе ТеПеР є Ця ШТуКеНЦія - {Item.name}, ВаШе хп СТаЛо оГо На {Item.bonus_hp} ВаШа БРоНя ЗБіЛьШиЛаСя На {Item.bonus_armor} ")
+
+    def healing(self, procent):
+        heal = (self.max_hp/100) * procent
+        if self.hp + heal > self.max_hp:
+            self.hp = self.max_hp
+            print(f" Ти ЖиВий РаДій, Чи ТеБе ВБиТИ?")
+        else:
+            self.hp += heal
+            print(f" Ти ЖиВий СВій {heal} хп! Ти ЖиВий На {self.hp} а Не На {self.max_hp} ")
 
 
 list_of_enemy = [
@@ -192,6 +228,7 @@ def fight_with_enemy():
         my_hero.attack(enemy)
         if enemy.hp <= 0:
             print(f"{enemy.name} Ви йоГо ПеРеМоГЛи!")
+            enemy.drop_Item()
             break
 
         print("\n\n")
@@ -209,6 +246,8 @@ print(f"Чудовий вибір {Player_name}")
 # Мій ЧуБаПеЛіК
 my_hero = None
 while my_hero is None:
+
+
     Player_class = input("оберіть ваш клас. Введіть цифру. щоб підтвердити вибір:\n"
                          "1) Воїн(100 hp, 10 шкоди)\n"
                          "2) Захисник(200 hp,5 шкоди)\n "
@@ -240,7 +279,7 @@ while my_hero.hp > 0:
     if situation == "ворог":
         fight_with_enemy()
     elif situation == "відпочинок":
-        print("відпочинок")
+        my_hero.healing(random.randint(20, 80))
     elif situation == "скарб":
         print("скарб")
     input("Для наступного кроку натисніть Ентер!")

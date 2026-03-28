@@ -1,6 +1,4 @@
 import random
-import time
-from idlelib.configdialog import changes
 
 
 class Enemy:
@@ -53,7 +51,6 @@ class Item:
         self.bonus_hp = bonus_hp
         self.bonus_armor = bonus_armor
 
-
 class Player:
     def __init__(self, name, Player_class, maxhp, damage):
         self.name = name
@@ -62,6 +59,7 @@ class Player:
         self.max_hp = maxhp
         self.weapon = None
         self.armor = None
+        self.accessories = None
         self.damage = damage
 
     def attack(self, target):
@@ -73,13 +71,11 @@ class Player:
         if self.hp < 0:
             self.hp = 0
         print(f"{self.name} отримав {taken_damage} шкоди. Залишилося {self.hp} життя!")
-
     def Player_info(self):
         print(f"--{self.name}--\n"
               f"клас:{self.Player_class}\n"
               f"життя{self.hp}\n"
               f"шкода{self.damage}\n")
-
     def equip_weapon(self, item):
         if item.item_class != self.Player_class:
             print(f"Ти Що ЗаБуВ ХТо Ти, Це Не ТоБі {item.name}")
@@ -88,7 +84,6 @@ class Player:
         self.damage += item.bonus_damage
         print(f"у ТеБе ТеПеР є Ця ШТуКеНЦія - {item.
               name}")
-
     def equip_armor(self, Item):
         if Item.item_class != self.Player_class:
             print(f"Ти Що ЗаБуВ ХТо Ти, Це Не ТоБі {Item.name}")
@@ -97,7 +92,11 @@ class Player:
         self.max_hp += Item.bonus_hp
         self.armor += Item.bonus_armor
         print(f"у ТеБе ТеПеР є Ця ШТуКеНЦія - {Item.name}, ВаШе хп СТаЛо оГо На {Item.bonus_hp} ВаШа БРоНя ЗБіЛьШиЛаСя На {Item.bonus_armor} ")
-
+    def equip_accessories(self, Item):
+         self.armor = Item.armor
+         self.max_hp += Item.bonus_hp
+         self.damage += Item.bonus_damage
+         self.accessories = Item
     def healing(self, procent):
         heal = (self.max_hp/100) * procent
         if self.hp + heal > self.max_hp:
@@ -106,6 +105,7 @@ class Player:
         else:
             self.hp += heal
             print(f" Ти ЖиВий СВій {heal} хп! Ти ЖиВий На {self.hp} а Не На {self.max_hp} ")
+
 
 
 list_of_enemy = [
@@ -216,6 +216,28 @@ list_of_armor = [
     Item("Archmage Robe", "Чарівник", 0, 40, 6),
     Item("Ancient Arcane Robe", "Чарівник", 0, 55, 8)
 ]
+list_of_accessories = [
+    Item("Сталеве Кільце", "Universal", 0, 0, 15),
+    Item("Медальйон Сили", "Universal", 20, 0, 0),
+    Item("Пояс Витривалості", "Universal", 0, 50, 0),
+    Item("Рубіновий Кулон", "Universal", 0, 100, 0),
+    Item("Заточений Камінь", "Universal", 15, 0, 0),
+    Item("Пластинчасті Наручі", "Universal", 0, 0, 25),
+    Item("Намисто Регенерації", "Universal", 0, 30, 5),
+    Item("Важкий Наплічник", "Universal", -5, 0, 40),
+    Item("Еліксир Люті", "Universal", 35, -20, 0),
+    Item("Брошка Охоронця", "Universal", 0, 30, 10),
+    Item("Кристал Стійкості", "Universal", 0, 150, 0),
+    Item("Бойовий Прапор", "Universal", 18, 0, 0),
+    Item("Рукавиці Майстра", "Universal", 12, 0, 8),
+    Item("Підкова Удачі", "Universal", 10, 20, 5),
+    Item("Залізний Ланцюг", "Universal", 0, 0, 18),
+    Item("Гравійована Пряжка", "Universal", 7, 0, 7),
+    Item("Серце Велетня", "Universal", 0, 250, 0),
+    Item("Стародавня Руна", "Universal", 45, 0, 0),
+    Item("Шипований Пояс", "Universal", 10, 0, 10),
+    Item("Сфера Гармонії", "Universal", 15, 50, 15)
+]
 
 
 def fight_with_enemy():
@@ -237,6 +259,35 @@ def fight_with_enemy():
         if my_hero.hp <= 0:
             print(f"{my_hero.name} Ви ЗДоХЛи ВіД {enemy.name}!")
             break
+def WoW_found_a_tresure ():
+    my_chance = random.randint(1, 100)
+
+    if my_chance <= 20:
+        user_choice = input("оГо Ви ЗНайШЛи ВеЛиЧеЗНу КаКуЛьКу ДаВайТе її ВіДКРиїМо"
+                            "ВіДКРиТи(1) Чиии ВіДКРиТи(2)")
+
+        if user_choice == 2:
+            print("а ЧоГо Не 1?")
+        if user_choice == 1:
+            print("а ЧоГо Не 2?")
+            treasure = random.choice(list_of_accessories)
+            print(f"ВаШа ШТуКеНЦія: {treasure.name}!\n"
+                  f"\tБонусна шкода: {treasure.bonus_damage}\n"
+                  f"\tБонусна броня: {treasure.bonus_armor}\n"
+                  f"\tБонусе хп: {treasure.bonus_hp}\n"
+                  f"ВЗяТи(1) чи ПЛюНУТи (КЛаЦай Шо ХоЧеШ)? ")
+            user_answer = input()
+            if user_answer == "1":
+                my_hero.equip_accessories(treasure)
+            else:
+                return
+
+    elif my_chance <= 40:
+        pass
+    elif my_chance <= 60:
+        pass
+    elif my_chance <= 80:
+        pass
 
 
 print("Вітаюмо вас у світі ТЦКулька \nДавайте створимо ваш аватар!")
@@ -281,5 +332,5 @@ while my_hero.hp > 0:
     elif situation == "відпочинок":
         my_hero.healing(random.randint(20, 80))
     elif situation == "скарб":
-        print("скарб")
+        WoW_found_a_tresure()
     input("Для наступного кроку натисніть Ентер!")
